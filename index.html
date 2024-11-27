@@ -1,430 +1,494 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CIFI Vending Machine Widget</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
-    <style>
-        :root {
-            --primary: #e84142;
-            --secondary: #ff6b6b;
-            --background: #f8f9fa;
-            --text: #2d3436;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            margin: 0;
-            padding: 10px;
-            height: 100vh;
-            overflow-y: auto;
-            background: var(--background);
-            color: var(--text);
-        }
-
-        .widget-container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        .container {
-            height: 100vh;
-            overflow: auto;
-            padding: 10px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.connect-wallet {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.connect-wallet:hover {
-    background: var(--secondary);
+<base href="/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blockchain Vending Machine</title>
+<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+<style>
+body {
+  font-family: 'Arial', sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
 }
 
 .vending-machine {
-    background: white;
-    margin: 20px auto;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  background: white;
+  border-radius: 15px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  width: 95%;
+  max-width: 1200px;
+  margin: 2rem auto;
 }
 
-.vending-machine-header {
-    text-align: center;
-    margin-bottom: 20px;
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #f0f0f0;
 }
 
-.token-grid {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px; /* Add space between products */
-}
-
-.token-item {
-    flex: 1;
-    max-width: 300px;
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-.token-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.token-item .token-icon {
-    width: 50px;
-    height: 50px;
-    margin: 0 auto 10px;
-    background: var(--primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-}
-
-.token-price {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: var(--primary);
-    margin: 10px 0;
-}
-
-.buy-button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-    font-weight: bold;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.buy-button:hover {
-    background: var(--secondary);
-    transform: translateY(-2px);
-}
-
-.token-balance {
-    display: flex;
-    justify-content: space-around;
-    background: #e9ecef;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.token-balance #tokenBalance {
-    display: flex;
-    gap: 20px;
-}
-
-.token-balance #tokenBalance div {
-    padding: 8px 15px;
-    background: white;
-    border-radius: 5px;
-    margin: 0 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.main-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.news-feed {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.post-form {
-    margin-bottom: 20px;
-}
-
-.post-type {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.post-content {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    min-height: 100px;
-}
-
-.post-button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.messages {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.message-list {
-    margin-bottom: 20px;
-}
-
-.message {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-.message-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 10px;
+.header h1 {
+  font-size: 2.2rem;
+  color: #333;
+  margin: 0;
 }
 
 .wallet-status {
-    color: var(--primary);
-    font-weight: bold;
+  background: #f8f9fa;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.cost-info {
-    background: #f8f9fa;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    font-size: 0.9em;
-    color: #666;
+.connect-button {
+  background: #40E0D0;
+  color: black;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
-.token-item .buy-button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
+.connect-button.connected {
+  background: #20B2AA;
+  position: relative;
 }
 
-.error-message {
-    color: var(--primary);
-    padding: 10px;
-    margin: 10px 0;
-    background: #ffe6e6;
-    border-radius: 5px;
-    display: none;
+.connect-button.connected:before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #00FF00;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 
-/* Add this CSS for the modal */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
+.wallet-status.error {
+  border: 1px solid #ff6b6b;
+  background: #fff5f5;
 }
 
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 10px;
-    position: relative;
+.connect-button:hover {
+  background: #20B2AA;
 }
 
-.modal-header {
-    margin-bottom: 20px;
+.products {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  padding: 1rem 0;
 }
 
-.modal-header h2 {
-    margin: 0;
-    color: var(--primary);
+.product {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.modal-body {
-    margin-bottom: 20px;
+.product:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.modal-body input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+.product h3 {
+  color: #333;
+  font-size: 1.3rem;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.modal-footer {
-    text-align: right;
+.product-input {
+  width: calc(100% - 1rem);
+  padding: 0.8rem;
+  margin: 0.8rem 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
 }
 
-.close {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+.buy-button {
+  background: #40E0D0;
+  color: black;
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
-.close:hover {
-    color: var(--primary);
+.buy-button:hover {
+  background: #20B2AA;
+  transform: translateY(-1px);
+}
+
+.balance {
+  font-size: 1rem;
+  color: #555;
+  margin: 0.8rem 0;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 6px;
+}
+
+.error {
+  color: #dc3545;
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+  min-height: 1.2rem;
+}
+
+@media (max-width: 1200px) {
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .products {
+    grid-template-columns: 1fr;
+  }
+  
+  .vending-machine {
+    padding: 1.5rem;
+  }
+  
+  .header h1 {
+    font-size: 1.8rem;
+  }
 }
 </style>
 </head>
 <body>
-    <div class="container">
-        <div class="vending-machine">
-            <div class="vending-machine-header">
-                <h2>Welcome</h2>
-                <p>Purchase tokens to interact with the social platform</p>
-            </div>
+<div class="vending-machine">
+    <div class="header">
+        <h1>Blockchain Vending Machine</h1>
+    </div>
+    
+    <div class="wallet-status">
+        <span id="wallet-address">Wallet not connected</span>
+        <button class="connect-button" id="connect-wallet">Connect Wallet</button>
+    </div>
 
-            <nav>
-                <h1>CIFI Vending Machine</h1>
-                <div>
-                    <span class="wallet-status" id="walletStatus">Not Connected</span>
-                    <button class="connect-wallet" id="connectWallet">Connect Wallet</button>
-                </div>
-            </nav>          
-            
-            <div class="token-balance">
-                Your Balance: <div id="tokenBalance">
-                    <div>0 wCIFI</div>
-                    <div>0 wREFI</div>
-                </div>
-            </div>
-
-            <div class="token-grid">
-                <div class="token-item">
-                    <div class="token-icon">wCIFI</div>
-                    <h3>wCIFI Token</h3>
-                    <p id="availableSupply0">0 wCIFI Available</p>
-                    <p class="token-price" id="tokenPrice0">0 wREFI per token</p>
-                    <button class="buy-button" onclick="purchaseTokens(0)">Buy wCIFI</button>
-                </div>
-                
-                <div class="token-item">
-                    <div class="token-icon">wREFI</div>
-                    <h3>wREFI Token</h3>
-                    <p id="availableSupply1">0 wREFI Available</p>
-                    <p class="token-price" id="tokenPrice1">0 wCIFI per token</p>
-                    <button class="buy-button" onclick="purchaseTokens(1)">Buy wREFI</button>
-                </div>
-
-                <div class="token-item">
-                    <div class="token-icon">wREFI</div>
-                    <h3>wREFI Premium Token</h3>
-                    <p id="availableSupply2">0 wREFI Available</p>
-                    <p class="token-price" id="tokenPrice2">5 wCIFI per token</p>
-                    <button class="buy-button" onclick="purchaseTokens(2)">Buy Premium wREFI</button>
-                </div>
-            </div>
+    <div class="products">
+        <div class="product">
+            <h3>CIFI (XDC)</h3>
+            <div class="balance">Balance: <span id="cifi-balance">0.00</span></div>
+            <div class="balance">Available: <span id="supply-0">0.00</span></div>
+            <input type="number" class="product-input" id="amount-0" placeholder="Amount">
+            <button class="buy-button" onclick="buyProduct(0)">Buy CIFI</button>
+            <div class="error" id="error-0"></div>
         </div>
 
-        <!-- Purchase Modal -->
-        <div id="purchaseModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <div class="modal-header">
-                    <h2 id="modalProductName">Purchase Tokens</h2>
-                </div>
-                <div class="modal-body">
-                    <p id="modalProductId">Product ID: 0</p>
-                    <input type="number" id="purchaseAmount" placeholder="Enter amount of tokens to purchase">
-                    <p id="totalCost"></p>
-                </div>
-                <div class="modal-footer">
-                    <button class="buy-button" onclick="confirmPurchase()">Confirm Purchase</button>
-                </div>
-            </div>
+        <div class="product">
+            <h3>CIFI (USDC)</h3>
+            <div class="balance">Balance: <span id="cifi-balance">0.00</span></div>
+            <div class="balance">Available: <span id="supply-1">0.00</span></div>
+            <input type="number" class="product-input" id="amount-1" placeholder="Amount">
+            <button class="buy-button" onclick="buyProduct(1)">Buy CIFI</button>
+            <div class="error" id="error-1"></div>
         </div>
 
-        <iframe 
-            src="https://your-domain.com/vending-machine.html" 
-            style="width: 100%; height: 800px; border: none; overflow: hidden;"
-            id="vendingMachineFrame"
-            allow="web3.js; ethereum"
-        ></iframe>
+        <div class="product">
+            <h3>REFI (XDC)</h3>
+            <div class="balance">Balance: <span id="refi-balance">0.00</span></div>
+            <div class="balance">Available: <span id="supply-2">0.00</span></div>
+            <input type="number" class="product-input" id="amount-2" placeholder="Amount">
+            <button class="buy-button" onclick="buyProduct(2)">Buy REFI</button>
+            <div class="error" id="error-2"></div>
+        </div>
 
-        <script>
-        window.addEventListener('message', function(event) {
-            // Validate origin for security
-            const allowedOrigins = ['https://your-domain.com']; // Update with actual allowed domains
-            if (!allowedOrigins.includes(event.origin)) {
-                return;
-            }
+        <div class="product">
+            <h3>REFI (USDC)</h3>
+            <div class="balance">Balance: <span id="refi-balance">0.00</span></div>
+            <div class="balance">Available: <span id="supply-3">0.00</span></div>
+            <input type="number" class="product-input" id="amount-3" placeholder="Amount">
+            <button class="buy-button" onclick="buyProduct(3)">Buy REFI</button>
+            <div class="error" id="error-3"></div>
+        </div>
+    </div>
+</div>
 
-            switch(event.data.type) {
-                case 'connect':
-                    connectWallet();
-                    break;
-                case 'purchase':
-                    purchaseTokens(event.data.productId);
-                    break;
-                case 'getBalance':
-                    loadBalances().then(balances => {
-                        window.parent.postMessage({
-                            type: 'balances',
-                            data: balances
-                        }, event.origin);
-                    });
-                    break;
-            }
-        });
+<script>
+// Contract Configuration
+const CONFIG = {
+    CIFI_ADDRESS: '0x74b910fcf01C7153b80E3940042BB48518f37257',
+    REFI_ADDRESS: '0x57f086481F362E1E6051544861A4b1724C9fB99F',
+    VENDING_MACHINE_ADDRESS: "0x97014Ec227F4Be89F8a00F23837C7DA7366f091A",
+    XDC_ADDRESS: "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
+    USDC_ADDRESS: "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
+    AVALANCHE_TESTNET: {
+        chainId: '0xA869',
+        chainName: 'Avalanche Fuji Testnet',
+        nativeCurrency: {
+            name: 'Avalanche',
+            symbol: 'AVAX',
+            decimals: 18
+        },
+        rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
+        blockExplorerUrls: ['https://testnet.snowscan.xyz/']
+    }
+};
 
-        const VENDING_MACHINE_ADDRESS = '0x97014Ec227F4Be89F8a00F23837C7DA7366f091A'; // Update with your vending machine contract address
-        const VENDING_MACHINE_ABI = [
+// Global state
+let state = {
+    provider: null,
+    signer: null,
+    vendingContract: null,
+    isConnecting: false,
+    address: null
+};
+
+const TOKEN_ABI = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Approval",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "allowance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "decimals",
+		"outputs": [
+			{
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "symbol",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalSupply",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transfer",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
+
+const VENDING_MACHINE_ABI = [
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -1062,503 +1126,266 @@ nav {
 	}
 ];
 
-        const TOKEN_ABI = [
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "Approval",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "Transfer",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "allowance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "approve",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "balanceOf",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "decimals",
-		"outputs": [
-			{
-				"internalType": "uint8",
-				"name": "",
-				"type": "uint8"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "name",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "symbol",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalSupply",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "transfer",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "transferFrom",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "success",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
-];
-        const WREFI_ADDRESS = '0x57f086481F362E1E6051544861A4b1724C9fB99F';
-        const WCIFI_ADDRESS = '0x74b910fcf01C7153b80E3940042BB48518f37257';
-
-        let web3;
-        let userAccount;
-        let vendingMachineContract;
-        let wREFIContract;
-        let wCIFIContract;
-
-        let purchaseModal = document.getElementById('purchaseModal');
-        let closeBtn = document.getElementsByClassName('close')[0];
-        let currentPrice = 0;
-
-        async function connectWallet() {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    // Request account access
-                    await window.ethereum.request({ 
-                        method: 'eth_requestAccounts',
-                        params: [{ eth_accounts: {} }]
-                    });
-                    
-                    web3 = new Web3(window.ethereum);
-                    const accounts = await web3.eth.getAccounts();
-                    userAccount = accounts[0];
-
-                    // Notify parent window of connection
-                    window.parent.postMessage({
-                        type: 'walletConnected',
-                        account: userAccount
-                    }, '*');
-
-                    // Initialize contracts and load data
-                    initializeContracts();
-                    await loadBalances();
-                    await loadProductDetails();
-
-                    document.getElementById('walletStatus').textContent = 'Connected: ' + userAccount;
-
-                } catch (error) {
-                    console.error('Wallet connection error:', error);
-                    window.parent.postMessage({
-                        type: 'error',
-                        message: error.message
-                    }, '*');
-                }
-            } else {
-                window.parent.postMessage({
-                    type: 'error',
-                    message: 'MetaMask not installed'
-                }, '*');
-            }
+// UI Updates
+const UI = {
+    updateWalletDisplay(address) {
+        const display = document.getElementById('wallet-address');
+        const connectButton = document.getElementById('connect-wallet');
+        
+        if (address) {
+            display.textContent = `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+            connectButton.textContent = 'Connected';
+            connectButton.classList.add('connected');
+        } else {
+            display.textContent = 'Wallet not connected';
+            connectButton.textContent = 'Connect Wallet';
+            connectButton.classList.remove('connected');
         }
+    },
 
-        function initializeContracts() {
-            vendingMachineContract = new web3.eth.Contract(VENDING_MACHINE_ABI, VENDING_MACHINE_ADDRESS);
-            wREFIContract = new web3.eth.Contract(TOKEN_ABI, WREFI_ADDRESS);
-            wCIFIContract = new web3.eth.Contract(TOKEN_ABI, WCIFI_ADDRESS);
-        }
+    setError(productId, message, isSuccess = false) {
+        const errorElement = document.getElementById(`error-${productId}`);
+        errorElement.textContent = message;
+        errorElement.style.color = isSuccess ? '#40E0D0' : '#dc3545';
+    },
 
-        async function loadBalances() {
-            try {
-                const wREFIBalance = await wREFIContract.methods.balanceOf(userAccount).call();
-                const wCIFIBalance = await wCIFIContract.methods.balanceOf(userAccount).call();
-                
-                document.getElementById('tokenBalance').innerHTML = `
-                    <div>${web3.utils.fromWei(wCIFIBalance, 'ether')} wCIFI</div>
-                    <div>${web3.utils.fromWei(wREFIBalance, 'ether')} wREFI</div>
-                `;
-            } catch (error) {
-                console.error('Error loading balances:', error);
-            }
-        }
+    clearError(productId) {
+        document.getElementById(`error-${productId}`).textContent = '';
+    }
+};
 
-        async function loadProductDetails() {
-            try {
-                // Load Product 0 (wCIFI)
-                const product0 = await vendingMachineContract.methods.products(0).call();
-                document.getElementById('availableSupply0').textContent = 
-                    web3.utils.fromWei(product0.availableSupply, 'ether') + ' wCIFI Available';
-                document.getElementById('tokenPrice0').textContent = 
-                    web3.utils.fromWei(product0.price, 'ether') + ' wREFI per token';
+// Wallet Connection
+async function initializeWalletConnection() {
+    if (!window.ethereum) {
+        throw new Error('MetaMask is not installed');
+    }
 
-                // Load Product 1 (wREFI)
-                const product1 = await vendingMachineContract.methods.products(1).call();
-                document.getElementById('availableSupply1').textContent = 
-                    web3.utils.fromWei(product1.availableSupply, 'ether') + ' wREFI Available';
-                document.getElementById('tokenPrice1').textContent = 
-                    web3.utils.fromWei(product1.price, 'ether') + ' wCIFI per token';
-
-                // Load Product 2 (Premium wREFI)
-                const product2 = await vendingMachineContract.methods.products(2).call();
-                document.getElementById('availableSupply2').textContent = 
-                    web3.utils.fromWei(product2.availableSupply, 'ether') + ' wREFI Available';
-                document.getElementById('tokenPrice2').textContent = 
-                    web3.utils.fromWei(product2.price, 'ether') + ' wCIFI per token';
-            } catch (error) {
-                console.error('Error loading product details:', error);
-            }
-        }
-
-        function updatePurchaseModal(productId) {
-            const purchaseAmount = document.getElementById('purchaseAmount');
-            const totalCostElement = document.getElementById('totalCost');
-            
-            // Remove previous event listener
-            purchaseAmount.removeEventListener('input', calculateTotalCost);
-
-            // Add input event listener for real-time updates
-            purchaseAmount.addEventListener('input', calculateTotalCost);
-
-            function calculateTotalCost() {
-                const amount = this.value;
-                if (amount && !isNaN(amount) && amount > 0) {
-                    let total;
-                    let paymentToken;
-                    
-                    switch(productId) {
-                        case 0:
-                            total = amount * currentPrice;
-                            paymentToken = 'wREFI';
-                            break;
-                        case 1:
-                            total = amount * currentPrice;
-                            paymentToken = 'wCIFI';
-                            break;
-                        case 2:
-                            total = amount * currentPrice;
-                            paymentToken = 'wCIFI';
-                            break;
-                    }
-                    
-                    totalCostElement.textContent = `Total cost: ${total} ${paymentToken}`;
-                } else {
-                    totalCostElement.textContent = 'Enter amount to see total cost';
-                }
-            }
-        }
-
-        async function purchaseTokens(productId) {
-            try {
-                if (!userAccount) {
-                    alert('Please connect your wallet first!');
-                    return;
-                }
-                
-                if (!vendingMachineContract) {
-                    alert('Vending machine contract not initialized. Please connect wallet first.');
-                    return;
-                }
-                
-                // Show the modal
-                const purchaseModal = document.getElementById('purchaseModal');
-                purchaseModal.style.display = "block";
-                
-                // Get current price and update modal content
-                const product = await vendingMachineContract.methods.products(productId).call();
-                currentPrice = web3.utils.fromWei(product.price, 'ether');
-                
-                // Update modal displays with product specific information
-                document.getElementById('modalProductId').textContent = `Product ID: ${productId}`;
-                
-                let productName;
-                switch(productId) {
-                    case 0:
-                        productName = 'wCIFI';
-                        break;
-                    case 1:
-                        productName = 'wREFI';
-                        break;
-                    case 2:
-                        productName = 'Premium wREFI';
-                        break;
-                }
-                
-                document.getElementById('modalProductName').textContent = `Purchase ${productName} Tokens`;
-                document.getElementById('totalCost').textContent = 'Enter amount to see total cost';
-                document.getElementById('purchaseAmount').value = '';
-                
-                // Store the current product ID for use in confirmation
-                purchaseModal.dataset.productId = productId;
-                
-                // Initialize real-time calculator
-                updatePurchaseModal(productId);
-            } catch (error) {
-                console.error('Error in purchaseTokens:', error);
-                alert('An error occurred while initializing the purchase. Please try again.');
-            }
-        }
-
-        async function confirmPurchase() {
-            try {
-                const amount = document.getElementById('purchaseAmount').value;
-                const productId = parseInt(purchaseModal.dataset.productId);
-                
-                // Validate input
-                if (!amount || isNaN(amount) || amount <= 0) {
-                    throw new Error('Invalid amount');
-                }
-
-                const amountInWei = web3.utils.toWei(amount.toString(), 'ether');
-                const product = await vendingMachineContract.methods.products(productId).call();
-                const paymentAmount = web3.utils.toBN(amountInWei).mul(web3.utils.toBN(product.price))
-                    .div(web3.utils.toBN(web3.utils.toWei('1', 'ether')));
-
-                // Handle approvals
-                if (productId === 0) {
-                    // Buying wCIFI, pay with wREFI
-                    const allowance = await wREFIContract.methods.allowance(userAccount, VENDING_MACHINE_ADDRESS).call();
-                    if (web3.utils.toBN(allowance).lt(paymentAmount)) {
-                        await wREFIContract.methods.approve(VENDING_MACHINE_ADDRESS, paymentAmount)
-                            .send({ from: userAccount });
-                    }
-                } else {
-                    // Buying wREFI or Premium wREFI, pay with wCIFI
-                    const allowance = await wCIFIContract.methods.allowance(userAccount, VENDING_MACHINE_ADDRESS).call();
-                    if (web3.utils.toBN(allowance).lt(paymentAmount)) {
-                        await wCIFIContract.methods.approve(VENDING_MACHINE_ADDRESS, paymentAmount)
-                            .send({ from: userAccount });
-                    }
-                }
-
-                // Execute purchase
-                await vendingMachineContract.methods.purchaseProduct(productId, amountInWei)
-                    .send({ from: userAccount });
-
-                // Notify parent window
-                window.parent.postMessage({
-                    type: 'purchaseComplete',
-                    productId: productId,
-                    amount: amount
-                }, '*');
-
-                // Update UI
-                purchaseModal.style.display = "none";
-                await loadBalances();
-                await loadProductDetails();
-
-            } catch (error) {
-                console.error('Purchase error:', error);
-                window.parent.postMessage({
-                    type: 'error',
-                    message: error.message
-                }, '*');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add click handlers
-            document.getElementById('connectWallet').addEventListener('click', connectWallet);
-            
-            // Setup modal close handlers
-            const purchaseModal = document.getElementById('purchaseModal');
-            const closeBtn = document.querySelector('.close');
-            
-            if (closeBtn) {
-                closeBtn.addEventListener('click', function() {
-                    purchaseModal.style.display = "none";
-                });
-            }
-            
-            window.addEventListener('click', function(event) {
-                if (event.target === purchaseModal) {
-                    purchaseModal.style.display = "none";
-                }
-            });
+    try {
+        state.provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await window.ethereum.request({
+            method: 'eth_requestAccounts'
         });
-        </script>
-    </div>
+        
+        if (accounts.length === 0) {
+            throw new Error('No accounts found');
+        }
+
+        state.address = accounts[0];
+        state.signer = state.provider.getSigner();
+        
+        await setupNetwork();
+        await initializeContracts();
+        await setupEventListeners();
+        
+        UI.updateWalletDisplay(state.address);
+        
+        return true;
+    } catch (error) {
+        console.error('Wallet connection failed:', error);
+        throw error;
+    }
+}
+
+async function setupNetwork() {
+    try {
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: CONFIG.AVALANCHE_TESTNET.chainId }],
+        });
+    } catch (error) {
+        if (error.code === 4902) {
+            await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [CONFIG.AVALANCHE_TESTNET],
+            });
+        } else {
+            throw error;
+        }
+    }
+}
+
+async function initializeContracts() {
+    state.vendingContract = new ethers.Contract(
+        CONFIG.VENDING_MACHINE_ADDRESS,
+        VENDING_MACHINE_ABI,
+        state.signer
+    );
+}
+
+function setupEventListeners() {
+    window.ethereum.on('accountsChanged', handleAccountsChanged);
+    window.ethereum.on('chainChanged', handleChainChanged);
+    window.ethereum.on('disconnect', handleDisconnect);
+}
+
+// Event Handlers
+async function handleAccountsChanged(accounts) {
+    if (accounts.length === 0) {
+        await handleDisconnect();
+    } else {
+        state.address = accounts[0];
+        state.signer = state.provider.getSigner();
+        UI.updateWalletDisplay(state.address);
+        await updateBalances();
+    }
+	// Previous code remains the same up to setupEventListeners...
+
+function handleChainChanged(_chainId) {
+    // Reload the page to ensure clean state
+    window.location.reload();
+}
+
+async function handleDisconnect() {
+    state = {
+        provider: null,
+        signer: null,
+        vendingContract: null,
+        isConnecting: false,
+        address: null
+    };
+    UI.updateWalletDisplay(null);
+}
+
+// Connect Wallet Function
+async function connectWallet() {
+    if (state.isConnecting) return;
+    
+    try {
+        state.isConnecting = true;
+        UI.updateWalletDisplay(null);
+        
+        await initializeWalletConnection();
+        await updateBalances();
+        
+    } catch (error) {
+        console.error('Failed to connect wallet:', error);
+        alert(`Wallet connection failed: ${error.message}`);
+    } finally {
+        state.isConnecting = false;
+    }
+}
+
+// Balance Updates
+async function updateBalances() {
+    if (!state.signer || !state.vendingContract) return;
+
+    try {
+        const address = await state.signer.getAddress();
+        
+        // Update CIFI balances
+        const cifiContract = new ethers.Contract(CONFIG.CIFI_ADDRESS, TOKEN_ABI, state.provider);
+        const cifiBalance = await cifiContract.balanceOf(address);
+        document.querySelectorAll('#cifi-balance').forEach(element => {
+            element.textContent = ethers.utils.formatUnits(cifiBalance, 18);
+        });
+
+        // Update REFI balances
+        const refiContract = new ethers.Contract(CONFIG.REFI_ADDRESS, TOKEN_ABI, state.provider);
+        const refiBalance = await refiContract.balanceOf(address);
+        document.querySelectorAll('#refi-balance').forEach(element => {
+            element.textContent = ethers.utils.formatUnits(refiBalance, 18);
+        });
+
+        // Update available supplies
+        for (let i = 0; i < 4; i++) {
+            const supply = await state.vendingContract.getAvailableSupply(i);
+            document.getElementById(`supply-${i}`).textContent = ethers.utils.formatUnits(supply, 18);
+        }
+    } catch (error) {
+        console.error('Failed to update balances:', error);
+    }
+}
+
+// Product Purchase
+async function buyProduct(productId) {
+    if (!state.signer || !state.vendingContract) {
+        alert('Please connect your wallet first!');
+        return;
+    }
+
+    UI.clearError(productId);
+    
+    try {
+        const amount = document.getElementById(`amount-${productId}`).value;
+        if (!amount || amount <= 0) {
+            throw new Error('Please enter a valid amount');
+        }
+
+        const amountBN = ethers.utils.parseUnits(amount, 18);
+        
+        // Get the appropriate payment token based on productId
+        const paymentToken = productId % 2 === 0 ? CONFIG.XDC_ADDRESS : CONFIG.USDC_ADDRESS;
+        
+        // Approve tokens
+        const paymentContract = new ethers.Contract(paymentToken, TOKEN_ABI, state.signer);
+        console.log('Approving tokens...');
+        const approvalTx = await paymentContract.approve(CONFIG.VENDING_MACHINE_ADDRESS, amountBN);
+        await approvalTx.wait();
+        
+        // Execute purchase
+        console.log('Executing purchase...');
+        const purchaseTx = await state.vendingContract.purchaseProduct(productId, amountBN, {
+            gasLimit: 300000 // Add reasonable gas limit
+        });
+        
+        UI.setError(productId, 'Transaction pending...', true);
+        
+        await purchaseTx.wait();
+        
+        // Clear input and show success
+        document.getElementById(`amount-${productId}`).value = '';
+        UI.setError(productId, 'Purchase successful!', true);
+        
+        // Update balances after successful purchase
+        await updateBalances();
+        
+    } catch (error) {
+        console.error('Purchase failed:', error);
+        UI.setError(productId, `Transaction failed: ${error.message}`);
+    }
+}
+
+// Network Validation
+async function validateNetwork() {
+    if (!state.provider) return false;
+    
+    try {
+        const network = await state.provider.getNetwork();
+        const targetChainId = parseInt(CONFIG.AVALANCHE_TESTNET.chainId, 16);
+        
+        if (network.chainId !== targetChainId) {
+            await setupNetwork();
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Network validation failed:', error);
+        return false;
+    }
+}
+
+// Error Handler Utility
+function handleError(error, productId = null) {
+    console.error(error);
+    
+    if (error.code === 4001) {
+        return 'Transaction rejected by user';
+    } else if (error.code === -32603) {
+        return 'Internal JSON-RPC error. Please check your balance and try again.';
+    } else {
+        return error.message || 'Transaction failed';
+    }
+}
+
+// Initialize event listeners when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('connect-wallet').addEventListener('click', connectWallet);
+    
+    // Auto-connect if previously connected
+    if (window.ethereum && window.ethereum.selectedAddress) {
+        connectWallet();
+    }
+});
+</script>
 </body>
 </html>
