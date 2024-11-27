@@ -372,6 +372,7 @@ nav {
             </div>
         </div>
 
+        <!-- Purchase Modal -->
         <div id="purchaseModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
@@ -422,7 +423,7 @@ nav {
             }
         });
 
-        const VENDING_MACHINE_ADDRESS = '0x97014Ec227F4Be89F8a00F23837C7DA7366f091A'; // Need the actual vending machine contract address
+        const VENDING_MACHINE_ADDRESS = '0x97014Ec227F4Be89F8a00F23837C7DA7366f091A'; // Update with your vending machine contract address
         const VENDING_MACHINE_ABI = [
 	{
 		"inputs": [],
@@ -1062,234 +1063,234 @@ nav {
 ];
 
         const TOKEN_ABI = [
-            {
-                "inputs": [],
-                "stateMutability": "nonpayable",
-                "type": "constructor"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "owner",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "spender",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Approval",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "from",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Transfer",
-                "type": "event"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "name": "allowance",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "spender",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "approve",
-                "outputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "success",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "name": "balanceOf",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "decimals",
-                "outputs": [
-                    {
-                        "internalType": "uint8",
-                        "name": "",
-                        "type": "uint8"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "name",
-                "outputs": [
-                    {
-                        "internalType": "string",
-                        "name": "",
-                        "type": "string"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "symbol",
-                "outputs": [
-                    {
-                        "internalType": "string",
-                        "name": "",
-                        "type": "string"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "totalSupply",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "transfer",
-                "outputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "success",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "from",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "transferFrom",
-                "outputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "success",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }
-        ];
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Approval",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "allowance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "decimals",
+		"outputs": [
+			{
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "symbol",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalSupply",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transfer",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
         const WREFI_ADDRESS = '0x57f086481F362E1E6051544861A4b1724C9fB99F';
         const WCIFI_ADDRESS = '0x74b910fcf01C7153b80E3940042BB48518f37257';
 
@@ -1306,7 +1307,7 @@ nav {
         async function connectWallet() {
             if (typeof window.ethereum !== 'undefined') {
                 try {
-                    // Request account access in iframe context
+                    // Request account access
                     await window.ethereum.request({ 
                         method: 'eth_requestAccounts',
                         params: [{ eth_accounts: {} }]
@@ -1326,6 +1327,8 @@ nav {
                     initializeContracts();
                     await loadBalances();
                     await loadProductDetails();
+
+                    document.getElementById('walletStatus').textContent = 'Connected: ' + userAccount;
 
                 } catch (error) {
                     console.error('Wallet connection error:', error);
@@ -1348,7 +1351,6 @@ nav {
             wCIFIContract = new web3.eth.Contract(TOKEN_ABI, WCIFI_ADDRESS);
         }
 
-        // Add new function to load balances
         async function loadBalances() {
             try {
                 const wREFIBalance = await wREFIContract.methods.balanceOf(userAccount).call();
@@ -1366,21 +1368,21 @@ nav {
         async function loadProductDetails() {
             try {
                 // Load Product 0 (wCIFI)
-                const product0 = await vendingMachineContract.methods.getProduct(0).call();
+                const product0 = await vendingMachineContract.methods.products(0).call();
                 document.getElementById('availableSupply0').textContent = 
                     web3.utils.fromWei(product0.availableSupply, 'ether') + ' wCIFI Available';
                 document.getElementById('tokenPrice0').textContent = 
                     web3.utils.fromWei(product0.price, 'ether') + ' wREFI per token';
 
                 // Load Product 1 (wREFI)
-                const product1 = await vendingMachineContract.methods.getProduct(1).call();
+                const product1 = await vendingMachineContract.methods.products(1).call();
                 document.getElementById('availableSupply1').textContent = 
                     web3.utils.fromWei(product1.availableSupply, 'ether') + ' wREFI Available';
                 document.getElementById('tokenPrice1').textContent = 
                     web3.utils.fromWei(product1.price, 'ether') + ' wCIFI per token';
 
                 // Load Product 2 (Premium wREFI)
-                const product2 = await vendingMachineContract.methods.getProduct(2).call();
+                const product2 = await vendingMachineContract.methods.products(2).call();
                 document.getElementById('availableSupply2').textContent = 
                     web3.utils.fromWei(product2.availableSupply, 'ether') + ' wREFI Available';
                 document.getElementById('tokenPrice2').textContent = 
@@ -1390,13 +1392,17 @@ nav {
             }
         }
 
-        // Add real-time calculation for purchase amount
         function updatePurchaseModal(productId) {
             const purchaseAmount = document.getElementById('purchaseAmount');
             const totalCostElement = document.getElementById('totalCost');
             
+            // Remove previous event listener
+            purchaseAmount.removeEventListener('input', calculateTotalCost);
+
             // Add input event listener for real-time updates
-            purchaseAmount.addEventListener('input', function() {
+            purchaseAmount.addEventListener('input', calculateTotalCost);
+
+            function calculateTotalCost() {
                 const amount = this.value;
                 if (amount && !isNaN(amount) && amount > 0) {
                     let total;
@@ -1412,7 +1418,7 @@ nav {
                             paymentToken = 'wCIFI';
                             break;
                         case 2:
-                            total = amount * 5; // Fixed price of 5 wCIFI per wREFI
+                            total = amount * currentPrice;
                             paymentToken = 'wCIFI';
                             break;
                     }
@@ -1421,10 +1427,9 @@ nav {
                 } else {
                     totalCostElement.textContent = 'Enter amount to see total cost';
                 }
-            });
+            }
         }
 
-        // Update the purchaseTokens function to include the real-time calculator
         async function purchaseTokens(productId) {
             try {
                 if (!userAccount) {
@@ -1442,7 +1447,7 @@ nav {
                 purchaseModal.style.display = "block";
                 
                 // Get current price and update modal content
-                const product = await vendingMachineContract.methods.getProduct(productId).call();
+                const product = await vendingMachineContract.methods.products(productId).call();
                 currentPrice = web3.utils.fromWei(product.price, 'ether');
                 
                 // Update modal displays with product specific information
@@ -1487,17 +1492,25 @@ nav {
                 }
 
                 const amountInWei = web3.utils.toWei(amount.toString(), 'ether');
-                const product = await vendingMachineContract.methods.getProduct(productId).call();
+                const product = await vendingMachineContract.methods.products(productId).call();
                 const paymentAmount = web3.utils.toBN(amountInWei).mul(web3.utils.toBN(product.price))
                     .div(web3.utils.toBN(web3.utils.toWei('1', 'ether')));
 
                 // Handle approvals
                 if (productId === 0) {
-                    await wREFIContract.methods.approve(VENDING_MACHINE_ADDRESS, paymentAmount)
-                        .send({ from: userAccount });
+                    // Buying wCIFI, pay with wREFI
+                    const allowance = await wREFIContract.methods.allowance(userAccount, VENDING_MACHINE_ADDRESS).call();
+                    if (web3.utils.toBN(allowance).lt(paymentAmount)) {
+                        await wREFIContract.methods.approve(VENDING_MACHINE_ADDRESS, paymentAmount)
+                            .send({ from: userAccount });
+                    }
                 } else {
-                    await wCIFIContract.methods.approve(VENDING_MACHINE_ADDRESS, paymentAmount)
-                        .send({ from: userAccount });
+                    // Buying wREFI or Premium wREFI, pay with wCIFI
+                    const allowance = await wCIFIContract.methods.allowance(userAccount, VENDING_MACHINE_ADDRESS).call();
+                    if (web3.utils.toBN(allowance).lt(paymentAmount)) {
+                        await wCIFIContract.methods.approve(VENDING_MACHINE_ADDRESS, paymentAmount)
+                            .send({ from: userAccount });
+                    }
                 }
 
                 // Execute purchase
