@@ -5,7 +5,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blockchain Vending Machine</title>
-<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" 
+            integrity="sha512-FWm+x/RE+GV5f6SNC+GIfJyZqzI2hQQZg3eGWru+CXgVZ5K6ATrXcXris4YrkgB7OVgfkVDc5JyjRuOxn44gWg==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer"></script>
+    
+    <!-- Add fallback for ethers.js loading -->
+    <script>
+        window.addEventListener('load', function() {
+            if (typeof ethers === 'undefined') {
+                alert('Failed to load ethers.js. Please refresh the page or check your internet connection.');
+            }
+        });
+    </script>
 <style>
 body {
   font-family: 'Arial', sans-serif;
@@ -229,36 +241,43 @@ body {
 </div>
 
 <script>
-// Contract Configuration
-const CONFIG = {
-    CIFI_ADDRESS: '0x74b910fcf01C7153b80E3940042BB48518f37257',
-    REFI_ADDRESS: '0x57f086481F362E1E6051544861A4b1724C9fB99F',
-    VENDING_MACHINE_ADDRESS: "0x97014Ec227F4Be89F8a00F23837C7DA7366f091A",
-    XDC_ADDRESS: "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
-    USDC_ADDRESS: "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
-    AVALANCHE_TESTNET: {
-        chainId: '0xA869',
-        chainName: 'Avalanche Fuji Testnet',
-        nativeCurrency: {
-            name: 'Avalanche',
-            symbol: 'AVAX',
-            decimals: 18
-        },
-        rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
-        blockExplorerUrls: ['https://testnet.snowscan.xyz/']
-    }
-};
+function initApp() {
+        if (typeof ethers === 'undefined') {
+            console.error('Ethers library not loaded');
+            return;
+        }
 
-// Global state
-let state = {
-    provider: null,
-    signer: null,
-    vendingContract: null,
-    isConnecting: false,
-    address: null
-};
+        // Contract Configuration
+        const CONFIG = {
+            CIFI_ADDRESS: '0x74b910fcf01C7153b80E3940042BB48518f37257',
+            REFI_ADDRESS: '0x57f086481F362E1E6051544861A4b1724C9fB99F',
+            VENDING_MACHINE_ADDRESS: "0x97014Ec227F4Be89F8a00F23837C7DA7366f091A",
+            XDC_ADDRESS: "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
+            USDC_ADDRESS: "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
+            AVALANCHE_TESTNET: {
+                chainId: '0xA869',
+                chainName: 'Avalanche Fuji Testnet',
+                nativeCurrency: {
+                    name: 'Avalanche',
+                    symbol: 'AVAX',
+                    decimals: 18
+                },
+                rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
+                blockExplorerUrls: ['https://testnet.snowscan.xyz/']
+            }
+        };
 
-const TOKEN_ABI = [
+        // Global state with default values
+        const state = {
+            provider: null,
+            signer: null,
+            vendingContract: null,
+            isConnecting: false,
+            address: null
+        };
+
+        // Your existing TOKEN_ABI remains unchanged
+        const TOKEN_ABI = [
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -488,7 +507,8 @@ const TOKEN_ABI = [
 	}
 ];
 
-const VENDING_MACHINE_ABI = [
+        // Your existing VENDING_MACHINE_ABI remains unchanged
+        const VENDING_MACHINE_ABI = [
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -1126,266 +1146,264 @@ const VENDING_MACHINE_ABI = [
 	}
 ];
 
-// UI Updates
-const UI = {
-    updateWalletDisplay(address) {
-        const display = document.getElementById('wallet-address');
-        const connectButton = document.getElementById('connect-wallet');
-        
-        if (address) {
-            display.textContent = `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-            connectButton.textContent = 'Connected';
-            connectButton.classList.add('connected');
-        } else {
-            display.textContent = 'Wallet not connected';
-            connectButton.textContent = 'Connect Wallet';
-            connectButton.classList.remove('connected');
+        // UI Updates object
+        const UI = {
+            updateWalletDisplay(address) {
+                const display = document.getElementById('wallet-address');
+                const connectButton = document.getElementById('connect-wallet');
+                
+                if (address) {
+                    display.textContent = `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+                    connectButton.textContent = 'Connected';
+                    connectButton.classList.add('connected');
+                } else {
+                    display.textContent = 'Wallet not connected';
+                    connectButton.textContent = 'Connect Wallet';
+                    connectButton.classList.remove('connected');
+                }
+            },
+
+            setError(productId, message, isSuccess = false) {
+                const errorElement = document.getElementById(`error-${productId}`);
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.style.color = isSuccess ? '#40E0D0' : '#dc3545';
+                }
+            },
+
+            clearError(productId) {
+                const errorElement = document.getElementById(`error-${productId}`);
+                if (errorElement) {
+                    errorElement.textContent = '';
+                }
+            }
+        };
+
+        // Wallet Connection Logic
+        async function initializeWalletConnection() {
+            if (!window.ethereum) {
+                throw new Error('MetaMask is not installed');
+            }
+
+            try {
+                state.provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
+                const accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts'
+                });
+                
+                if (accounts.length === 0) {
+                    throw new Error('No accounts found');
+                }
+
+                state.address = accounts[0];
+                state.signer = state.provider.getSigner();
+                
+                await setupNetwork();
+                await initializeContracts();
+                setupEventListeners();
+                
+                UI.updateWalletDisplay(state.address);
+                
+                return true;
+            } catch (error) {
+                console.error('Wallet connection failed:', error);
+                throw error;
+            }
         }
-    },
 
-    setError(productId, message, isSuccess = false) {
-        const errorElement = document.getElementById(`error-${productId}`);
-        errorElement.textContent = message;
-        errorElement.style.color = isSuccess ? '#40E0D0' : '#dc3545';
-    },
-
-    clearError(productId) {
-        document.getElementById(`error-${productId}`).textContent = '';
-    }
-};
-
-// Wallet Connection
-async function initializeWalletConnection() {
-    if (!window.ethereum) {
-        throw new Error('MetaMask is not installed');
-    }
-
-    try {
-        state.provider = new ethers.providers.Web3Provider(window.ethereum);
-        const accounts = await window.ethereum.request({
-            method: 'eth_requestAccounts'
-        });
-        
-        if (accounts.length === 0) {
-            throw new Error('No accounts found');
+        // Network Setup
+        async function setupNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: CONFIG.AVALANCHE_TESTNET.chainId }],
+                });
+            } catch (error) {
+                if (error.code === 4902) {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [CONFIG.AVALANCHE_TESTNET],
+                    });
+                } else {
+                    throw error;
+                }
+            }
         }
 
-        state.address = accounts[0];
-        state.signer = state.provider.getSigner();
-        
-        await setupNetwork();
-        await initializeContracts();
-        await setupEventListeners();
-        
-        UI.updateWalletDisplay(state.address);
-        
-        return true;
-    } catch (error) {
-        console.error('Wallet connection failed:', error);
-        throw error;
-    }
-}
+        // Contract Initialization
+        async function initializeContracts() {
+            try {
+                state.vendingContract = new ethers.Contract(
+                    CONFIG.VENDING_MACHINE_ADDRESS,
+                    VENDING_MACHINE_ABI,
+                    state.signer
+                );
+            } catch (error) {
+                console.error('Contract initialization failed:', error);
+                throw error;
+            }
+        }
 
-async function setupNetwork() {
-    try {
-        await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: CONFIG.AVALANCHE_TESTNET.chainId }],
-        });
-    } catch (error) {
-        if (error.code === 4902) {
-            await window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [CONFIG.AVALANCHE_TESTNET],
+        // Event Listeners Setup
+        function setupEventListeners() {
+            if (window.ethereum) {
+                window.ethereum.on('accountsChanged', handleAccountsChanged);
+                window.ethereum.on('chainChanged', handleChainChanged);
+                window.ethereum.on('disconnect', handleDisconnect);
+            }
+        }
+
+        // Event Handlers
+        async function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                await handleDisconnect();
+            } else {
+                state.address = accounts[0];
+                if (state.provider) {
+                    state.signer = state.provider.getSigner();
+                    UI.updateWalletDisplay(state.address);
+                    await updateBalances();
+                }
+            }
+        }
+
+        function handleChainChanged() {
+            window.location.reload();
+        }
+
+        async function handleDisconnect() {
+            Object.assign(state, {
+                provider: null,
+                signer: null,
+                vendingContract: null,
+                isConnecting: false,
+                address: null
             });
-        } else {
-            throw error;
+            UI.updateWalletDisplay(null);
         }
-    }
-}
 
-async function initializeContracts() {
-    state.vendingContract = new ethers.Contract(
-        CONFIG.VENDING_MACHINE_ADDRESS,
-        VENDING_MACHINE_ABI,
-        state.signer
-    );
-}
+        // Connect Wallet Function
+        async function connectWallet() {
+            if (state.isConnecting) return;
+            
+            try {
+                state.isConnecting = true;
+                UI.updateWalletDisplay(null);
+                
+                await initializeWalletConnection();
+                await updateBalances();
+                
+            } catch (error) {
+                console.error('Failed to connect wallet:', error);
+                alert(`Wallet connection failed: ${error.message}`);
+            } finally {
+                state.isConnecting = false;
+            }
+        }
 
-function setupEventListeners() {
-    window.ethereum.on('accountsChanged', handleAccountsChanged);
-    window.ethereum.on('chainChanged', handleChainChanged);
-    window.ethereum.on('disconnect', handleDisconnect);
-}
+        // Balance Updates
+        async function updateBalances() {
+            if (!state.signer || !state.vendingContract) return;
 
-// Event Handlers
-async function handleAccountsChanged(accounts) {
-    if (accounts.length === 0) {
-        await handleDisconnect();
-    } else {
-        state.address = accounts[0];
-        state.signer = state.provider.getSigner();
-        UI.updateWalletDisplay(state.address);
-        await updateBalances();
-    }
-	// Previous code remains the same up to setupEventListeners...
+            try {
+                const address = await state.signer.getAddress();
+                
+                const cifiContract = new ethers.Contract(CONFIG.CIFI_ADDRESS, TOKEN_ABI, state.provider);
+                const refiContract = new ethers.Contract(CONFIG.REFI_ADDRESS, TOKEN_ABI, state.provider);
 
-function handleChainChanged(_chainId) {
-    // Reload the page to ensure clean state
-    window.location.reload();
-}
+                const [cifiBalance, refiBalance] = await Promise.all([
+                    cifiContract.balanceOf(address),
+                    refiContract.balanceOf(address)
+                ]);
 
-async function handleDisconnect() {
-    state = {
-        provider: null,
-        signer: null,
-        vendingContract: null,
-        isConnecting: false,
-        address: null
-    };
-    UI.updateWalletDisplay(null);
-}
+                document.querySelectorAll('#cifi-balance').forEach(element => {
+                    element.textContent = ethers.utils.formatUnits(cifiBalance, 18);
+                });
 
-// Connect Wallet Function
-async function connectWallet() {
-    if (state.isConnecting) return;
-    
-    try {
-        state.isConnecting = true;
-        UI.updateWalletDisplay(null);
-        
-        await initializeWalletConnection();
-        await updateBalances();
-        
-    } catch (error) {
-        console.error('Failed to connect wallet:', error);
-        alert(`Wallet connection failed: ${error.message}`);
-    } finally {
-        state.isConnecting = false;
-    }
-}
+                document.querySelectorAll('#refi-balance').forEach(element => {
+                    element.textContent = ethers.utils.formatUnits(refiBalance, 18);
+                });
 
-// Balance Updates
-async function updateBalances() {
-    if (!state.signer || !state.vendingContract) return;
+                // Update supplies
+                const supplyPromises = Array.from({length: 4}, (_, i) => 
+                    state.vendingContract.getAvailableSupply(i)
+                        .then(supply => {
+                            const element = document.getElementById(`supply-${i}`);
+                            if (element) {
+                                element.textContent = ethers.utils.formatUnits(supply, 18);
+                            }
+                        })
+                        .catch(console.error)
+                );
 
-    try {
-        const address = await state.signer.getAddress();
-        
-        // Update CIFI balances
-        const cifiContract = new ethers.Contract(CONFIG.CIFI_ADDRESS, TOKEN_ABI, state.provider);
-        const cifiBalance = await cifiContract.balanceOf(address);
-        document.querySelectorAll('#cifi-balance').forEach(element => {
-            element.textContent = ethers.utils.formatUnits(cifiBalance, 18);
+                await Promise.all(supplyPromises);
+
+            } catch (error) {
+                console.error('Failed to update balances:', error);
+            }
+        }
+
+        // Product Purchase
+        async function buyProduct(productId) {
+            if (!state.signer || !state.vendingContract) {
+                alert('Please connect your wallet first!');
+                return;
+            }
+
+            UI.clearError(productId);
+            
+            try {
+                const amount = document.getElementById(`amount-${productId}`).value;
+                if (!amount || amount <= 0) {
+                    throw new Error('Please enter a valid amount');
+                }
+
+                const amountBN = ethers.utils.parseUnits(amount, 18);
+                
+                const paymentToken = productId % 2 === 0 ? CONFIG.XDC_ADDRESS : CONFIG.USDC_ADDRESS;
+                const paymentContract = new ethers.Contract(paymentToken, TOKEN_ABI, state.signer);
+
+                UI.setError(productId, 'Approving tokens...', true);
+                const approvalTx = await paymentContract.approve(CONFIG.VENDING_MACHINE_ADDRESS, amountBN);
+                await approvalTx.wait();
+                
+                UI.setError(productId, 'Executing purchase...', true);
+                const purchaseTx = await state.vendingContract.purchaseProduct(productId, amountBN, {
+                    gasLimit: 300000
+                });
+                
+                await purchaseTx.wait();
+                
+                document.getElementById(`amount-${productId}`).value = '';
+                UI.setError(productId, 'Purchase successful!', true);
+                
+                await updateBalances();
+                
+            } catch (error) {
+                console.error('Purchase failed:', error);
+                UI.setError(productId, `Transaction failed: ${error.message}`);
+            }
+        }
+
+        // Make functions globally available
+        window.connectWallet = connectWallet;
+        window.buyProduct = buyProduct;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            const connectButton = document.getElementById('connect-wallet');
+            if (connectButton) {
+                connectButton.addEventListener('click', connectWallet);
+            }
+            
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                connectWallet();
+            }
         });
-
-        // Update REFI balances
-        const refiContract = new ethers.Contract(CONFIG.REFI_ADDRESS, TOKEN_ABI, state.provider);
-        const refiBalance = await refiContract.balanceOf(address);
-        document.querySelectorAll('#refi-balance').forEach(element => {
-            element.textContent = ethers.utils.formatUnits(refiBalance, 18);
-        });
-
-        // Update available supplies
-        for (let i = 0; i < 4; i++) {
-            const supply = await state.vendingContract.getAvailableSupply(i);
-            document.getElementById(`supply-${i}`).textContent = ethers.utils.formatUnits(supply, 18);
-        }
-    } catch (error) {
-        console.error('Failed to update balances:', error);
-    }
-}
-
-// Product Purchase
-async function buyProduct(productId) {
-    if (!state.signer || !state.vendingContract) {
-        alert('Please connect your wallet first!');
-        return;
     }
 
-    UI.clearError(productId);
-    
-    try {
-        const amount = document.getElementById(`amount-${productId}`).value;
-        if (!amount || amount <= 0) {
-            throw new Error('Please enter a valid amount');
-        }
-
-        const amountBN = ethers.utils.parseUnits(amount, 18);
-        
-        // Get the appropriate payment token based on productId
-        const paymentToken = productId % 2 === 0 ? CONFIG.XDC_ADDRESS : CONFIG.USDC_ADDRESS;
-        
-        // Approve tokens
-        const paymentContract = new ethers.Contract(paymentToken, TOKEN_ABI, state.signer);
-        console.log('Approving tokens...');
-        const approvalTx = await paymentContract.approve(CONFIG.VENDING_MACHINE_ADDRESS, amountBN);
-        await approvalTx.wait();
-        
-        // Execute purchase
-        console.log('Executing purchase...');
-        const purchaseTx = await state.vendingContract.purchaseProduct(productId, amountBN, {
-            gasLimit: 300000 // Add reasonable gas limit
-        });
-        
-        UI.setError(productId, 'Transaction pending...', true);
-        
-        await purchaseTx.wait();
-        
-        // Clear input and show success
-        document.getElementById(`amount-${productId}`).value = '';
-        UI.setError(productId, 'Purchase successful!', true);
-        
-        // Update balances after successful purchase
-        await updateBalances();
-        
-    } catch (error) {
-        console.error('Purchase failed:', error);
-        UI.setError(productId, `Transaction failed: ${error.message}`);
-    }
-}
-
-// Network Validation
-async function validateNetwork() {
-    if (!state.provider) return false;
-    
-    try {
-        const network = await state.provider.getNetwork();
-        const targetChainId = parseInt(CONFIG.AVALANCHE_TESTNET.chainId, 16);
-        
-        if (network.chainId !== targetChainId) {
-            await setupNetwork();
-        }
-        
-        return true;
-    } catch (error) {
-        console.error('Network validation failed:', error);
-        return false;
-    }
-}
-
-// Error Handler Utility
-function handleError(error, productId = null) {
-    console.error(error);
-    
-    if (error.code === 4001) {
-        return 'Transaction rejected by user';
-    } else if (error.code === -32603) {
-        return 'Internal JSON-RPC error. Please check your balance and try again.';
-    } else {
-        return error.message || 'Transaction failed';
-    }
-}
-
-// Initialize event listeners when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('connect-wallet').addEventListener('click', connectWallet);
-    
-    // Auto-connect if previously connected
-    if (window.ethereum && window.ethereum.selectedAddress) {
-        connectWallet();
-    }
-});
-</script>
+    // Initialize the app when the page loads
+    window.addEventListener('load', initApp);
+    </script>
 </body>
 </html>
